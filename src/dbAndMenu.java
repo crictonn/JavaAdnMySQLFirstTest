@@ -14,15 +14,14 @@ public class dbAndMenu {
         System.out.println("4. Удаление данных");
         System.out.println("5. Выход");
         System.out.println("Выбор: ");
-        int choice = scanner1.nextInt();
-        return choice;
+        return scanner1.nextInt();
     }
 
     public static String createTable(Connection conn){
         Scanner scanner1 = new Scanner(System.in);
         System.out.print("Введите название таблицы: ");
         String name = scanner1.nextLine();
-        String sqlRequest = "CREATE TABLE " + name + " (Id INT PRIMARY KEY AUTO_INCREMENT, ";
+        StringBuilder sqlRequest = new StringBuilder("CREATE TABLE " + name + " (Id INT PRIMARY KEY AUTO_INCREMENT, ");
         System.out.print("Введите количество столбцов: ");
         int colAmount = scanner1.nextInt();
         for (int i = 0; i < colAmount; i++) {
@@ -30,26 +29,27 @@ public class dbAndMenu {
             scanner1.nextLine();
             String colName = scanner1.nextLine();
             System.out.println("Выберите тип данных: ");
-            System.out.print("1. int\n" +
-                    "2. float\n" +
-                    "3. nvarchar\n");
+            System.out.print("""
+                    1. int
+                    2. float
+                    3. nvarchar
+                    """);
             int ch1 = scanner1.nextInt();
-            String colType = "";
-            switch (ch1){
-                case 1: colType = " INT"; break;
-                case 2: colType = " FLOAT"; break;
-                case 3: colType = " VARCHAR(20)"; break;
-
-            }
-            sqlRequest = sqlRequest + colName + colType;
+            String colType = switch (ch1) {
+                case 1 -> " INT";
+                case 2 -> " FLOAT";
+                case 3 -> " VARCHAR(20)";
+                default -> "";
+            };
+            sqlRequest.append(colName).append(colType);
             if (i == colAmount-1){
-                sqlRequest = sqlRequest + ")";
+                sqlRequest.append(")");
             }
             else {
-                sqlRequest = sqlRequest + ", ";
+                sqlRequest.append(", ");
             }
         }
-        return sqlRequest;
+        return sqlRequest.toString();
     }
 
     public static void main(String[] args) {
@@ -61,8 +61,6 @@ public class dbAndMenu {
             }
         } catch (Exception ex) {
             System.out.println("Connection failed...");
-
-            System.out.println(ex);
         }
 
 
@@ -79,8 +77,6 @@ public class dbAndMenu {
                         }
                     } catch (Exception ex) {
                         System.out.println("Connection failed...");
-
-                        System.out.println(ex);
                     }
                     break;
                 case 2:
