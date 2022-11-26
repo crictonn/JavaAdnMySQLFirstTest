@@ -80,7 +80,16 @@ public class dbAndMenu {
                     }
                     break;
                 case 2:
-                    System.out.println("Case 2 worked");
+                    try {
+                        Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
+                        Connection conn = getConnection();
+                        Statement statement = conn.createStatement();
+                        System.out.println(insertData(conn, statement));
+                    }
+                    catch (Exception E){
+                        System.out.println("Connection failed...");
+                        System.out.println(E);
+                    }
                     break;
                 case 3:
                     System.out.println("Case 3 worked");
@@ -93,6 +102,38 @@ public class dbAndMenu {
             }
 
         }
+    }
+
+    public static String insertData(Connection conn, Statement statement) {
+        Scanner scanner1 = new Scanner(System.in);
+        try {
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = \"menu\"");
+            System.out.println("¬ведите название таблицы из представленных дл€ добавлени€ данных: ");
+            while(resultSet.next()){
+                System.out.println(resultSet.getString("TABLE_NAME"));
+            }
+            String name = scanner1.nextLine();
+
+
+            resultSet = statement.executeQuery("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME LIKE '" + name +"'");
+            int counter = 0;
+            while(resultSet.next())
+                counter++;
+            System.out.print("¬ведите количество вводимых строк: ");
+            int amo = scanner1.nextInt();
+            resultSet = statement.executeQuery("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" + name + "'");
+            for(int i = 0; i<amo;i++){
+
+                System.out.print("¬ведите значение в столбец " + resultSet.getString(4));
+
+            }
+            statement.executeUpdate("INSERT cum (qwe, rty, uio) VALUES (1215 , 2.1, 'finish')");
+            return String.valueOf(counter);
+        }
+        catch (Exception sq){
+            System.out.println(sq);
+        }
+        return("Error");
     }
 
     public static Connection getConnection() throws SQLException, IOException {
