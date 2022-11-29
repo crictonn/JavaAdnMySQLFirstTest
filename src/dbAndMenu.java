@@ -121,13 +121,24 @@ public class dbAndMenu {
                 counter++;
             System.out.print("Введите количество вводимых строк: ");
             int amo = scanner1.nextInt();
-            resultSet = statement.executeQuery("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" + name + "'");
-            for(int i = 0; i<amo;i++){
-
-                System.out.print("Введите значение в столбец " + resultSet.getString(4));
+            resultSet = statement.executeQuery("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" + name + "' AND COLUMN_NAME != 'Id'");
+            StringBuilder insertStatement = new StringBuilder("INSERT " + name + " (");
+            while(resultSet.next()){
+                //System.out.println("Test");
+                System.out.print("Введите значение в столбец " + resultSet.getString(1) +": ");
+                scanner1.nextLine();
+                String var = scanner1.nextLine();
+                insertStatement.append(resultSet.getString(1));
+                if(resultSet.next()){
+                    insertStatement.append(", ");
+                }
+                else {
+                    insertStatement.append(") ");
+                }
+                System.out.println(insertStatement);
 
             }
-            statement.executeUpdate("INSERT cum (qwe, rty, uio) VALUES (1215 , 2.1, 'finish')");
+            statement.executeUpdate("INSERT cum (qwe, rty, uio) VALUES (12256 , 2.1, 'finish')");
             return String.valueOf(counter);
         }
         catch (Exception sq){
