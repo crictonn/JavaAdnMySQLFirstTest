@@ -84,11 +84,12 @@ public class dbAndMenu {
                         Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
                         Connection conn = getConnection();
                         Statement statement = conn.createStatement();
-                        System.out.println(insertData(conn, statement));
+                        //System.out.println(insertData(statement));
+                        statement.executeUpdate(insertData(statement));
                     }
                     catch (Exception E){
                         System.out.println("Connection failed...");
-                        System.out.println(E);
+                        E.printStackTrace();
                     }
                     break;
                 case 3:
@@ -104,47 +105,46 @@ public class dbAndMenu {
         }
     }
 
-    public static String insertData(Connection conn, Statement statement) {
+    public static String insertData(Statement statement) {
         Scanner scanner1 = new Scanner(System.in);
         try {
+            //Выбирается база данных menu, после выводится название всех таблиц и предлагается выбрать одну
             ResultSet resultSet = statement.executeQuery("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = \"menu\"");
             System.out.println("Введите название таблицы из представленных для добавления данных: ");
-            while(resultSet.next()){
+            while (resultSet.next()) {
                 System.out.println(resultSet.getString("TABLE_NAME"));
             }
             String name = scanner1.nextLine();
 
+            //Количество вводимых строк еще не до конца реализовано, и возможно не будет <3
+            //System.out.print("Введите количество вводимых строк: ");
+            //int amo = scanner1.nextInt();//Вводится кол-во строк, неплохо было бы сделать цикл, когда код снизу будет функционировать
 
-            resultSet = statement.executeQuery("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME LIKE '" + name +"'");
-            int counter = 0;
-            while(resultSet.next())
-                counter++;
-            System.out.print("Введите количество вводимых строк: ");
-            int amo = scanner1.nextInt();
-            resultSet = statement.executeQuery("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" + name + "' AND COLUMN_NAME != 'Id'");
             StringBuilder insertStatement = new StringBuilder("INSERT " + name + " (");
-            while(resultSet.next()){
-                //System.out.println("Test");
-                System.out.print("Введите значение в столбец " + resultSet.getString(1) +": ");
-                scanner1.nextLine();
-                String var = scanner1.nextLine();
+            String var;
+            StringBuilder temp = new StringBuilder();
+            resultSet = statement.executeQuery("SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" + name + "' AND COLUMN_NAME != 'Id'");
+            while (resultSet.next()) {
+                System.out.print("Введите значение типа " + resultSet.getString(2) + " в столбец " + resultSet.getString(1) + ": ");
+                if (resultSet.getString(2).contains("char")) { //если поле из запроса содержит в себе подстроку char,
+                    var = "'" + scanner1.nextLine() + "'";              //то вокруг него ставятся кавычки, чтобы запрос выполнился
+                } else {
+                    var = scanner1.nextLine();
+                }
+                temp.append(var);
                 insertStatement.append(resultSet.getString(1));
-                if(resultSet.next()){
+                if (resultSet.isLast()) {
+                    insertStatement.append(") VALUES (").append(temp).append(")");
+                } else {
                     insertStatement.append(", ");
+                    temp.append(", ");
                 }
-                else {
-                    insertStatement.append(") ");
-                }
-                System.out.println(insertStatement);
-
             }
-            statement.executeUpdate("INSERT cum (qwe, rty, uio) VALUES (12256 , 2.1, 'finish')");
-            return String.valueOf(counter);
+            return String.valueOf(insertStatement);
+        } catch (Exception sq) {
+            sq.printStackTrace();
         }
-        catch (Exception sq){
-            System.out.println(sq);
-        }
-        return("Error");
+        return ("Error");
     }
 
     public static Connection getConnection() throws SQLException, IOException {
