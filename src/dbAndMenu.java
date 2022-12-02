@@ -6,16 +6,21 @@ import java.util.*;
 
 public class dbAndMenu {
     Scanner scanner = new Scanner(System.in);
-    public static int printMenu(){
-        Scanner scanner1 = new Scanner(System.in);
-        System.out.println("1. Создание таблицы");
-        System.out.println("2. Добавление данных");
-        System.out.println("3. Изменение данных");
-        System.out.println("4. Удаление данных");
-        System.out.println("5. Выход");
-        System.out.println("Выбор: ");
-        return scanner1.nextInt();
+
+
+    public static int printMenu() {
+            Scanner scanner1 = new Scanner(System.in);
+            System.out.println("1. Создание таблицы");
+            System.out.println("2. Добавление данных");
+            System.out.println("3. Изменение данных");
+            System.out.println("4. Удаление данных");
+            System.out.println("5. Выход");
+            System.out.println("Выбор: ");
+            return scanner1.nextInt();
     }
+
+
+
 
     public static String createTable(Connection conn){
         Scanner scanner1 = new Scanner(System.in);
@@ -52,6 +57,8 @@ public class dbAndMenu {
         return sqlRequest.toString();
     }
 
+
+
     public static void main(String[] args) {
 
         try {
@@ -67,41 +74,43 @@ public class dbAndMenu {
 
         boolean TR = true;
         while (TR) {
-            switch (printMenu()) {
-                case 1:
-                    try {
-                        Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
-                        try (Connection conn = getConnection()) {
-                            Statement statement = conn.createStatement();
-                            statement.executeUpdate(createTable(conn));
+            try {
+                switch (printMenu()) {
+                    case 1:
+                        try {
+                            Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
+                            try (Connection conn = getConnection()) {
+                                Statement statement = conn.createStatement();
+                                statement.executeUpdate(createTable(conn));
+                            }
+                        } catch (Exception ex) {
+                            System.out.println("Connection failed...");
                         }
-                    } catch (Exception ex) {
-                        System.out.println("Connection failed...");
-                    }
-                    break;
-                case 2:
-                    try {
-                        Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
-                        Connection conn = getConnection();
-                        Statement statement = conn.createStatement();
-                        //System.out.println(insertData(statement));
-                        statement.executeUpdate(insertData(statement));
-                    }
-                    catch (Exception E){
-                        System.out.println("Connection failed...");
-                        E.printStackTrace();
-                    }
-                    break;
-                case 3:
-                    System.out.println("Case 3 worked");
-                    break;
-                case 4:
-                    System.out.println("Case 4 worked");
-                    break;
-                case 5:
-                    TR = false;
+                        break;
+                    case 2:
+                        try {
+                            Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
+                            Connection conn = getConnection();
+                            Statement statement = conn.createStatement();
+                            statement.executeUpdate(insertData(statement));
+                        } catch (Exception E) {
+                            System.out.println("Connection failed...");
+                            E.printStackTrace();
+                        }
+                        break;
+                    case 3:
+                        System.out.println("Case 3 worked");
+                        break;
+                    case 4:
+                        System.out.println("Case 4 worked");
+                        break;
+                    case 5:
+                        TR = false;
+                }
             }
-
+            catch (Exception typeEx){
+                typeEx.printStackTrace();
+            }
         }
     }
 
